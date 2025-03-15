@@ -1,0 +1,89 @@
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Header and navigation */
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 0rem;
+}
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+}
+
+nav ul li {
+    display: inline;
+}
+
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+}
+
+.login-btn {
+    background-color: #ff4c4c;
+    border-radius: 5px;
+}
+
+.logo a {
+    text-decoration: none;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Events Section */
+.events-section {
+    background-color: #D6403B;
+    color: white;
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.events-section h1 {
+    font-size: 36px;
+    margin-bottom: 30px;
+}
+
+.events-box {
+    background-color: white;
+    border-radius: 15px;
+    width: 80%;
+    margin: 0 auto;
+    height: 300px; /* Adjust as necessary */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .events-box {
+        width: 90%;
+    }
+}
+
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 3rem;
+    margin-top: 2rem;
+}

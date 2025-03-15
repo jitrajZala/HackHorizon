@@ -2,15 +2,44 @@ from flask import Flask, request, jsonify, render_template
 import google.generativeai as genai
 import os
 import requests
-from bs4 import BeautifulSoup
 import json
 
 app = Flask(__name__)
 
 # Configure Gemini API
-GOOGLE_API_KEY = 'AIzaSyAde8BbfKexV-2O-NiGn6he10Da7qWqhRk'  # Get this from Google AI Studio
-genai.configure(api_key=GOOGLE_API_KEY)
-model = genai.GenerativeModel('gemini-pro')
+# Get your API key:
+# 1. Go directly to https://makersuite.google.com/app/apikey
+# 2. Sign in with your Google account if needed
+# 3. Click "Create API key" or "Get API key"
+# 4. Accept terms and copy the key that starts with "AIza..."
+GOOGLE_API_KEY = 'AIzaSyAxmdxUR7_HsWY5kes0MGUk31Aena4IREM'  # Replace with your API key from MakerSuite
+
+try:
+    # Configure the API
+    genai.configure(api_key=GOOGLE_API_KEY)
+    
+    # List available models
+    print("Available models:")
+    for model in genai.list_models():
+        print(model.name)
+    
+    # Create the model instance
+    print("\nTrying to create model instance...")
+    model = genai.GenerativeModel('models/gemini-1.5-pro')
+    
+    # Test the connection with a simple prompt
+    print("\nTesting connection...")
+    test_response = model.generate_content("Say hello")
+    print("✓ Successfully connected to Gemini API")
+    print("Test response:", test_response.text)
+    
+except Exception as e:
+    print(f"\n❌ Detailed Error: {str(e)}")
+    print("\nTo fix this:")
+    print("1. Verify your API key is correct")
+    print("2. Make sure the Gemini API is enabled in Google Cloud Console")
+    print("3. Wait a few minutes after enabling the API")
+    print("4. Check if your Google Cloud project has billing enabled")
 
 # Add some context about your college
 COLLEGE_CONTEXT = """
@@ -55,22 +84,44 @@ def home():
 def chat():
     user_message = request.json.get('message', '')
     
+    if not GOOGLE_API_KEY:
+        return jsonify({'response': 'API key not configured. Please set up your Gemini API key.'})
+    
     try:
+        # Prepare the prompt based on the query type
         if is_college_related(user_message):
-            # Use college context for college-related queries
             prompt = f"{COLLEGE_CONTEXT}\nUser: {user_message}\nPlease provide a helpful response:"
         else:
-            # For general knowledge queries
-            prompt = f"""You are a helpful AI assistant. Please answer the following question using your general knowledge.
-            If the question requires very recent information, please mention that the information might not be up to date.
-            
-            User: {user_message}
-            Please provide a helpful response:"""
+            prompt = f"User: {user_message}\nPlease provide a helpful response:"
         
-        response = model.generate_content(prompt)
-        return jsonify({'response': response.text})
+        # Generate response
+        response = model.generate_content(
+            prompt,
+            generation_config={
+                'temperature': 0.7,
+                'max_output_tokens': 2048,
+            }
+        )
+        
+        if response and hasattr(response, 'text') and response.text:
+            return jsonify({'response': response.text})
+        else:
+            print("Empty response received")
+            return jsonify({'response': 'I apologize, but I received an empty response. Please try asking your question differently.'})
+            
     except Exception as e:
-        return jsonify({'response': f"I apologize, but I'm having trouble responding right now. Please try again later."})
+        error_message = str(e)
+        print(f"Detailed chat error: {error_message}")
+        
+        if "API key" in error_message.lower():
+            return jsonify({'response': 'There seems to be an issue with the API key. Please ensure it is valid.'})
+        elif "quota" in error_message.lower():
+            return jsonify({'response': 'The API quota has been exceeded. Please try again later.'})
+        elif "model" in error_message.lower():
+            return jsonify({'response': 'Please make sure you have enabled the Gemini API in your Google Cloud Console.'})
+        else:
+            return jsonify({'response': 'I encountered an error. Please try again in a few moments.'})
 
 if __name__ == '__main__':
     app.run(debug=True) 
+
