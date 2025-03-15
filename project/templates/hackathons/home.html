@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Hero Banner -->
+<section class="banner text-center">
+    <div class="container">
+        <h1 class="display-4">College Hackathon Platform</h1>
+        <p class="lead">Showcase your skills, collaborate with peers, and build innovative solutions</p>
+        <div class="mt-4">
+            <a href="{% url 'hackathon-list' %}" class="btn btn-light btn-lg me-2">Browse Hackathons</a>
+            {% if not user.is_authenticated %}
+                <a href="{% url 'register' %}" class="btn btn-outline-light btn-lg">Sign Up</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Active Hackathons -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="mb-4">Active Hackathons</h2>
+        {% if active_hackathons %}
+            <div class="row">
+                {% for hackathon in active_hackathons %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 hackathon-card">
+                            {% if hackathon.image %}
+                                <img src="{{ hackathon.image.url }}" class="card-img-top" alt="{{ hackathon.title }}">
+                            {% else %}
+                                <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80" class="card-img-top" alt="Hackathon">
+                            {% endif %}
+                            <div class="card-body">
+                                <span class="badge badge-active text-white mb-2">Active</span>
+                                <h5 class="card-title">{{ hackathon.title }}</h5>
+                                <p class="card-text">{{ hackathon.description|truncatechars:100 }}</p>
+                                <p><strong>Ends:</strong> {{ hackathon.end_date|date:"F d, Y" }}</p>
+                                <a href="{% url 'hackathon-detail' hackathon.id %}" class="btn btn-primary">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                There are no active hackathons at the moment. Check back soon!
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Upcoming Hackathons -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="mb-4">Upcoming Hackathons</h2>
+        {% if upcoming_hackathons %}
+            <div class="row">
+                {% for hackathon in upcoming_hackathons %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 hackathon-card">
+                            {% if hackathon.image %}
+                                <img src="{{ hackathon.image.url }}" class="card-img-top" alt="{{ hackathon.title }}">
+                            {% else %}
+                                <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80" class="card-img-top" alt="Hackathon">
+                            {% endif %}
+                            <div class="card-body">
+                                <span class="badge badge-upcoming text-white mb-2">Upcoming</span>
+                                <h5 class="card-title">{{ hackathon.title }}</h5>
+                                <p class="card-text">{{ hackathon.description|truncatechars:100 }}</p>
+                                <p><strong>Starts:</strong> {{ hackathon.start_date|date:"F d, Y" }}</p>
+                                <a href="{% url 'hackathon-detail' hackathon.id %}" class="btn btn-primary">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                There are no upcoming hackathons at the moment. Check back soon!
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Recent Hackathons -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="mb-4">Recent Hackathons</h2>
+        {% if recent_hackathons %}
+            <div class="row">
+                {% for hackathon in recent_hackathons %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 hackathon-card">
+                            {% if hackathon.image %}
+                                <img src="{{ hackathon.image.url }}" class="card-img-top" alt="{{ hackathon.title }}">
+                            {% else %}
+                                <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80" class="card-img-top" alt="Hackathon">
+                            {% endif %}
+                            <div class="card-body">
+                                <span class="badge badge-completed text-white mb-2">Completed</span>
+                                <h5 class="card-title">{{ hackathon.title }}</h5>
+                                <p class="card-text">{{ hackathon.description|truncatechars:100 }}</p>
+                                <div class="d-flex justify-content-between">
+                                    <a href="{% url 'hackathon-detail' hackathon.id %}" class="btn btn-primary">View Details</a>
+                                    <a href="{% url 'hackathon-results' hackathon.id %}" class="btn btn-outline-primary">Results</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                There are no completed hackathons yet.
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Why Participate?</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center p-4">
+                    <div class="card-body">
+                        <h3 class="h4 mb-3">Learn New Skills</h3>
+                        <p>Challenge yourself to learn new technologies and develop practical skills that will help you in your career.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center p-4">
+                    <div class="card-body">
+                        <h3 class="h4 mb-3">Build Your Portfolio</h3>
+                        <p>Create projects that you can showcase to potential employers and add to your professional portfolio.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center p-4">
+                    <div class="card-body">
+                        <h3 class="h4 mb-3">Network with Peers</h3>
+                        <p>Connect with like-minded students, form teams, and build relationships that can last throughout your career.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

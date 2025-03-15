@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Submit Project - {{ team.name }} - College Hackathon Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">Submit Project</h2>
+                </div>
+                <div class="card-body">
+                    <p class="mb-4">
+                        You're submitting a project for <strong>{{ hackathon.title }}</strong> as team <strong>{{ team.name }}</strong>.
+                    </p>
+                    
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        
+                        <div class="alert alert-info mt-4">
+                            <h5>Submission Guidelines:</h5>
+                            <ul class="mb-0">
+                                <li>GitHub link should be a public repository</li>
+                                <li>Demo link can be a deployed version of your project or a video demo</li>
+                                <li>Presentation should be in PDF format</li>
+                                <li>You can update your submission until the hackathon ends</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">Submit Project</button>
+                            <a href="{% url 'team-detail' team.id %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

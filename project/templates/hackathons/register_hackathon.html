@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Register for {{ hackathon.title }} - College Hackathon Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">Register for {{ hackathon.title }}</h2>
+                </div>
+                <div class="card-body">
+                    <p class="mb-4">
+                        You're registering for <strong>{{ hackathon.title }}</strong>. 
+                        Registration deadline: <strong>{{ hackathon.registration_deadline|date:"F d, Y - h:i A" }}</strong>
+                    </p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <h4 class="mb-3">Team Information</h4>
+                        {{ team_form|crispy }}
+                        
+                        <h4 class="mt-4 mb-3">Your Information</h4>
+                        <p class="text-muted mb-3">As the team creator, you'll be automatically assigned as the team leader.</p>
+                        {{ participant_form|crispy }}
+                        
+                        <div class="alert alert-info mt-4">
+                            <h5>Important Notes:</h5>
+                            <ul class="mb-0">
+                                <li>Maximum team size: {{ hackathon.max_team_size }} members</li>
+                                <li>You can invite team members after registration</li>
+                                <li>All team members must have accounts on the platform</li>
+                                <li>You cannot join multiple teams for the same hackathon</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">Register Team</button>
+                            <a href="{% url 'hackathon-detail' hackathon.id %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

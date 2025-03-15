@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ hackathon.title }} - College Hackathon Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Hackathon Details -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h1 class="card-title mb-3">{{ hackathon.title }}</h1>
+                    
+                    {% if hackathon.status == 'upcoming' %}
+                        <span class="badge bg-info text-white mb-3">Upcoming</span>
+                    {% elif hackathon.status == 'active' %}
+                        <span class="badge bg-success text-white mb-3">Active</span>
+                    {% else %}
+                        <span class="badge bg-secondary text-white mb-3">Completed</span>
+                    {% endif %}
+                    
+                    <div class="mb-4">
+                        {% if hackathon.image %}
+                            <img src="{{ hackathon.image.url }}" class="img-fluid rounded" alt="{{ hackathon.title }}">
+                        {% else %}
+                            <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80" class="img-fluid rounded" alt="Hackathon">
+                        {% endif %}
+                    </div>
+                    
+                    <h5>Description</h5>
+                    <p>{{ hackathon.description }}</p>
+                    
+                    <h5>Rules</h5>
+                    <p>{{ hackathon.rules }}</p>
+                    
+                    <h5>Prizes</h5>
+                    <p>{{ hackathon.prizes }}</p>
+                </div>
+            </div>
+            
+            <!-- Announcements -->
+            {% if announcements %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Announcements</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for announcement in announcements %}
+                            <div class="mb-3 {% if not forloop.last %}border-bottom pb-3{% endif %}">
+                                <h6>{{ announcement.title }}</h6>
+                                <p>{{ announcement.content }}</p>
+                                <small class="text-muted">Posted on {{ announcement.created_at|date:"F d, Y" }}</small>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Registration/Status Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Hackathon Status</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Start Date
+                            <span>{{ hackathon.start_date|date:"F d, Y - h:i A" }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            End Date
+                            <span>{{ hackathon.end_date|date:"F d, Y - h:i A" }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Registration Deadline
+                            <span>{{ hackathon.registration_deadline|date:"F d, Y - h:i A" }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Max Team Size
+                            <span>{{ hackathon.max_team_size }} members</span>
+                        </li>
+                    </ul>
+                    
+                    <div class="mt-4">
+                        {% if user.is_authenticated %}
+                            {% if user_registered %}
+                                <div class="alert alert-success">
+                                    <p class="mb-2">You are registered for this hackathon!</p>
+                                    <a href="{% url 'team-detail' user_team.id %}" class="btn btn-primary btn-sm">View Your Team</a>
+                                </div>
+                            {% else %}
+                                {% if hackathon.status == 'upcoming' and registration_open %}
+                                    <a href="{% url 'register-hackathon' hackathon.id %}" class="btn btn-primary w-100">Register for this Hackathon</a>
+                                {% elif hackathon.status == 'upcoming' and not registration_open %}
+                                    <button class="btn btn-secondary w-100" disabled>Registration Closed</button>
+                                {% elif hackathon.status == 'active' %}
+                                    <button class="btn btn-secondary w-100" disabled>Registration Closed</button>
+                                {% else %}
+                                    <a href="{% url 'hackathon-results' hackathon.id %}" class="btn btn-primary w-100">View Results</a>
+                                {% endif %}
+                            {% endif %}
+                        {% else %}
+                            <div class="alert alert-info">
+                                <p class="mb-2">You need to be logged in to register for this hackathon.</p>
+                                <a href="{% url 'login' %}" class="btn btn-primary btn-sm">Log In</a>
+                                <a href="{% url 'register' %}" class="btn btn-outline-primary btn-sm">Sign Up</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Teams Card (if hackathon is active or completed) -->
+            {% if hackathon_started or hackathon_ended %}
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Participating Teams</h5>
+                    </div>
+                    <div class="card-body">
+                        {% with team_count=hackathon.teams.count %}
+                            <p>{{ team_count }} team{{ team_count|pluralize }} participating in this hackathon.</p>
+                        {% endwith %}
+                        
+                        {% if hackathon.status == 'completed' %}
+                            <a href="{% url 'hackathon-results' hackathon.id %}" class="btn btn-primary w-100">View Results</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

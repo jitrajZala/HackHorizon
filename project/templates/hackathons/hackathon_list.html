@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Hackathons - College Hackathon Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Hackathons</h1>
+    
+    <!-- Search and Filter -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-6">
+                    <label for="search" class="form-label">Search</label>
+                    <input type="text" class="form-control" id="search" name="q" value="{{ search_query }}" placeholder="Search hackathons...">
+                </div>
+                <div class="col-md-4">
+                    <label for="status" class="form-label">Status</label>
+                    <select class="form-select" id="status" name="status">
+                        <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All</option>
+                        <option value="upcoming" {% if status_filter == 'upcoming' %}selected{% endif %}>Upcoming</option>
+                        <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+                        <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Hackathon List -->
+    {% if hackathons %}
+        <div class="row">
+            {% for hackathon in hackathons %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 hackathon-card">
+                        {% if hackathon.image %}
+                            <img src="{{ hackathon.image.url }}" class="card-img-top" alt="{{ hackathon.title }}">
+                        {% else %}
+                            {% if hackathon.status == 'upcoming' %}
+                                <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80" class="card-img-top" alt="Hackathon">
+                            {% elif hackathon.status == 'active' %}
+                                <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80" class="card-img-top" alt="Hackathon">
+                            {% else %}
+                                <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80" class="card-img-top" alt="Hackathon">
+                            {% endif %}
+                        {% endif %}
+                        <div class="card-body">
+                            {% if hackathon.status == 'upcoming' %}
+                                <span class="badge badge-upcoming text-white mb-2">Upcoming</span>
+                            {% elif hackathon.status == 'active' %}
+                                <span class="badge badge-active text-white mb-2">Active</span>
+                            {% else %}
+                                <span class="badge badge-completed text-white mb-2">Completed</span>
+                            {% endif %}
+                            
+                            <h5 class="card-title">{{ hackathon.title }}</h5>
+                            <p class="card-text">{{ hackathon.description|truncatechars:100 }}</p>
+                            
+                            {% if hackathon.status == 'upcoming' %}
+                                <p><strong>Starts:</strong> {{ hackathon.start_date|date:"F d, Y" }}</p>
+                                <p><strong>Registration Deadline:</strong> {{ hackathon.registration_deadline|date:"F d, Y" }}</p>
+                            {% elif hackathon.status == 'active' %}
+                                <p><strong>Ends:</strong> {{ hackathon.end_date|date:"F d, Y" }}</p>
+                            {% else %}
+                                <p><strong>Ended:</strong> {{ hackathon.end_date|date:"F d, Y" }}</p>
+                            {% endif %}
+                            
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'hackathon-detail' hackathon.id %}" class="btn btn-primary">View Details</a>
+                                {% if hackathon.status == 'completed' %}
+                                    <a href="{% url 'hackathon-results' hackathon.id %}" class="btn btn-outline-primary">Results</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" aria-label="First">
+                                <span aria-hidden="true">&laquo;&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" aria-label="Last">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    {% else %}
+        <div class="alert alert-info">
+            No hackathons found matching your criteria. Try adjusting your search or filter.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

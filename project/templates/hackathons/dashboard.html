@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - College Hackathon Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Your Dashboard</h1>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Participating Hackathons -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="mb-0">Your Hackathons</h3>
+                </div>
+                <div class="card-body">
+                    {% if participating_hackathons %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Hackathon</th>
+                                        <th>Status</th>
+                                        <th>Dates</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for hackathon in participating_hackathons %}
+                                        <tr>
+                                            <td>{{ hackathon.title }}</td>
+                                            <td>
+                                                <span class="badge {% if hackathon.status == 'upcoming' %}bg-info{% elif hackathon.status == 'active' %}bg-success{% else %}bg-secondary{% endif %} text-white">
+                                                    {{ hackathon.status|title }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {% if hackathon.status == 'upcoming' %}
+                                                    Starts: {{ hackathon.start_date|date:"M d, Y" }}
+                                                {% elif hackathon.status == 'active' %}
+                                                    Ends: {{ hackathon.end_date|date:"M d, Y" }}
+                                                {% else %}
+                                                    Ended: {{ hackathon.end_date|date:"M d, Y" }}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'hackathon-detail' hackathon.id %}" class="btn btn-sm btn-outline-primary">Details</a>
+                                                {% if hackathon.status == 'completed' %}
+                                                    <a href="{% url 'hackathon-results' hackathon.id %}" class="btn btn-sm btn-outline-secondary">Results</a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <p class="mb-0">You are not participating in any hackathons yet.</p>
+                        </div>
+                        <a href="{% url 'hackathon-list' %}" class="btn btn-primary">Browse Hackathons</a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Your Teams -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="mb-0">Your Teams</h3>
+                </div>
+                <div class="card-body">
+                    {% if user_teams %}
+                        <div class="list-group">
+                            {% for team in user_teams %}
+                                <a href="{% url 'team-detail' team.id %}" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">{{ team.name }}</h5>
+                                        <small>
+                                            <span class="badge {% if team.hackathon.status == 'upcoming' %}bg-info{% elif team.hackathon.status == 'active' %}bg-success{% else %}bg-secondary{% endif %} text-white">
+                                                {{ team.hackathon.status|title }}
+                                            </span>
+                                        </small>
+                                    </div>
+                                    <p class="mb-1">Hackathon: {{ team.hackathon.title }}</p>
+                                    <small>
+                                        {% with member_count=team.members.count %}
+                                            {{ member_count }} member{{ member_count|pluralize }}
+                                        {% endwith %}
+                                        • Created {{ team.created_at|date:"M d, Y" }}
+                                    </small>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <p class="mb-0">You haven't joined any teams yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Upcoming Hackathons -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="mb-0">Upcoming Hackathons</h3>
+                </div>
+                <div class="card-body">
+                    {% if upcoming_hackathons %}
+                        <div class="list-group">
+                            {% for hackathon in upcoming_hackathons %}
+                                <a href="{% url 'hackathon-detail' hackathon.id %}" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">{{ hackathon.title }}</h5>
+                                    </div>
+                                    <p class="mb-1">{{ hackathon.description|truncatechars:100 }}</p>
+                                    <small>
+                                        Starts: {{ hackathon.start_date|date:"M d, Y" }}
+                                        <br>
+                                        Registration Deadline: {{ hackathon.registration_deadline|date:"M d, Y" }}
+                                    </small>
+                                </a>
+                            {% endfor %}
+                        </div>
+                        <div class="mt-3">
+                            <a href="{% url 'hackathon-list' %}?status=upcoming" class="btn btn-outline-primary w-100">View All Upcoming</a>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <p class="mb-0">There are no upcoming hackathons at the moment.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Quick Links -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">Quick Links</h3>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a href="{% url 'hackathon-list' %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Browse All Hackathons</h5>
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                        </a>
+                        <a href="{% url 'hackathon-list' %}?status=active" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Active Hackathons</h5>
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                        </a>
+                        <a href="{% url 'hackathon-list' %}?status=completed" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Past Hackathons</h5>
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
