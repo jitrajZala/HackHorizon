@@ -1,0 +1,138 @@
+.chat-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 400px;
+    height: 500px;
+    border: 1px solid #000000;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.219);
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Chat Header */
+#chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 15px;
+    background-color: #f1f1f1;
+    font-weight: bold;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Close Button */
+#close-btn {
+    background: #b7202e;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 7px;
+    padding: 7px 12px;
+}
+
+#close-btn:hover {
+    background-color: #76151e;
+}
+
+/* Chat Messages */
+.chat-messages {
+    flex-grow: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+}
+
+/* Message Styling */
+.message {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 75%;
+}
+
+.user-message {
+    background-color: #b7202e;
+    color: white;
+    align-self: flex-end;
+    margin-left: auto;
+}
+
+/* Input Box and Send Button */
+.input-container {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: white;
+    border-top: 1px solid #ddd;
+    gap: 8px;
+}
+
+#user-input {
+    flex-grow: 1;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    font-size: 14px;
+}
+
+#send-btn {
+    padding: 10px 15px;
+    background-color: #b7202e;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#send-btn:hover {
+    background-color: #76151e;
+}
+
+/* Floating Chat Icon */
+#chat-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #b7202e;
+    color: white;
+    padding: 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 24px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+#chat-icon:hover {
+    background-color: #76151e;
+}
+.hidden {
+   display: none !important;
+
+}
+
+/* Bot Message with Logo */
+.bot-message {
+   display: flex;
+   align-items: center;
+   background-color: #e9ecef;
+   color: black;
+   padding: 10px;
+   border-radius: 10px;
+   max-width: 75%;
+}
+
+/* Bot Logo Styling */
+.bot-logo {
+   width: 30px;
+   height: 30px;
+   border-radius: 50%;
+   margin-right: 10px;
+}

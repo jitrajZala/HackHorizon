@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>KJSIT Chatbot</title>
+
+    <link rel="stylesheet" href="style.css"
+</head>
+<body>
+    <div id="chat-icon">💬</div>
+    <div class="chat-container" class="hidden">
+        <div id="chat-header">
+            <span>ChatBot</span>
+            <button id="close-btn">&times;</button>
+        </div>
+        
+    <div id="chat-body"></div>
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="Type your message..." onkeypress="if(event.key === 'Enter') sendMessage()">
+            <button id="send-btn" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+   <script src="/script.js"></script>
+</body>
+</html> 
