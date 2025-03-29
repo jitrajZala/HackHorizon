@@ -11,6 +11,7 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    z-index: 1000;
 }
 
 /* Chat Header */
@@ -45,6 +46,8 @@
     padding: 15px;
     overflow-y: auto;
     background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Message Styling */
@@ -53,6 +56,7 @@
     padding: 10px;
     border-radius: 10px;
     max-width: 75%;
+    word-wrap: break-word;
 }
 
 .user-message {
@@ -79,6 +83,10 @@
     border-radius: 5px;
     outline: none;
     font-size: 14px;
+}
+
+#user-input:focus {
+    border-color: #b7202e;
 }
 
 #send-btn {
@@ -108,31 +116,36 @@
     cursor: pointer;
     font-size: 24px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
 }
 
 #chat-icon:hover {
     background-color: #76151e;
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
 }
-.hidden {
-   display: none !important;
 
+.hidden {
+    display: none !important;
 }
 
 /* Bot Message with Logo */
 .bot-message {
-   display: flex;
-   align-items: center;
-   background-color: #e9ecef;
-   color: black;
-   padding: 10px;
-   border-radius: 10px;
-   max-width: 75%;
+    display: flex;
+    align-items: center;
+    background-color: #e9ecef;
+    color: black;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 75%;
+    align-self: flex-start;
 }
 
 /* Bot Logo Styling */
 .bot-logo {
-   width: 30px;
-   height: 30px;
-   border-radius: 50%;
-   margin-right: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
 }

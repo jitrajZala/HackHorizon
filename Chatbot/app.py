@@ -3,8 +3,19 @@ import google.generativeai as genai
 import os
 import requests
 import json
+from dotenv import load_dotenv
+from supabase import create_client, Client
+
+# Load environment variables
+load_dotenv()
 
 app = Flask(__name__)
+
+# Initialize Supabase client
+supabase: Client = create_client(
+    os.getenv("SUPABASE_URL"),
+    os.getenv("SUPABASE_KEY")
+)
 
 # Configure Gemini API
 # Get your API key:
@@ -12,7 +23,7 @@ app = Flask(__name__)
 # 2. Sign in with your Google account if needed
 # 3. Click "Create API key" or "Get API key"
 # 4. Accept terms and copy the key that starts with "AIza..."
-GOOGLE_API_KEY = 'AIzaSyAxmdxUR7_HsWY5kes0MGUk31Aena4IREM'  # Replace with your API key from MakerSuite
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 try:
     # Configure the API
@@ -104,6 +115,17 @@ def chat():
         )
         
         if response and hasattr(response, 'text') and response.text:
+            # Store chat history in Supabase
+            try:
+                data = {
+                    'user_message': user_message,
+                    'bot_response': response.text,
+                    'timestamp': 'now()'
+                }
+                supabase.table('chat_history').insert(data).execute()
+            except Exception as e:
+                print(f"Error storing chat history: {str(e)}")
+            
             return jsonify({'response': response.text})
         else:
             print("Empty response received")
@@ -121,6 +143,15 @@ def chat():
             return jsonify({'response': 'Please make sure you have enabled the Gemini API in your Google Cloud Console.'})
         else:
             return jsonify({'response': 'I encountered an error. Please try again in a few moments.'})
+
+# New route to get chat history
+@app.route('/chat-history', methods=['GET'])
+def get_chat_history():
+    try:
+        response = supabase.table('chat_history').select('*').order('timestamp', desc=True).limit(10).execute()
+        return jsonify(response.data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True) 
